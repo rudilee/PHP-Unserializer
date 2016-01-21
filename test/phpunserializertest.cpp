@@ -17,6 +17,7 @@ private Q_SLOTS:
     void testUnserializeBoolean();
     void testUnserializeNull();
     void testUnserializeArray();
+    void testUnserializeLaravelSession();
 };
 
 PhpUnserializerTest::PhpUnserializerTest()
@@ -80,6 +81,35 @@ void PhpUnserializerTest::testUnserializeArray()
     array["test"] = 123;
 
     expected["array"] = array;
+
+    QCOMPARE(unserialized, expected);
+}
+
+void PhpUnserializerTest::testUnserializeLaravelSession()
+{
+    QString serialized = "a:5:{s:6:\"_token\";s:40:\"AhIwQgibFKMzUwYIj3Msd83eCyjhfTYoS1l2gXXM\";s:9:\"_previous\";a:1:{s:3:\"url\";s:32:\"https://192.168.99.12/admin/user\";}s:5:\"flash\";a:2:{s:3:\"old\";a:0:{}s:3:\"new\";a:0:{}}s:38:\"login_82e5d2c56bdd0811318f0cf078b78bfc\";i:1;s:9:\"_sf2_meta\";a:3:{s:1:\"u\";i:1453251743;s:1:\"c\";i:1453251728;s:1:\"l\";s:1:\"0\";}}";
+    QVariantHash unserialized = PhpUnserializer::unserialize(serialized).toHash();
+
+    QVariantHash expected;
+    expected["_token"] = QString("AhIwQgibFKMzUwYIj3Msd83eCyjhfTYoS1l2gXXM");
+
+    QVariantHash array1;
+    array1["url"] = QString("https://192.168.99.12/admin/user");
+
+    QVariantHash array2;
+    array2["old"] = QVariantHash();
+    array2["new"] = QVariantHash();
+
+    expected["_previous"] = array1;
+    expected["flash"] = array2;
+    expected["login_82e5d2c56bdd0811318f0cf078b78bfc"] = 1;
+
+    QVariantHash array3;
+    array3["u"] = 1453251743;
+    array3["c"] = 1453251728;
+    array3["l"] = QString("0");
+
+    expected["_sf2_meta"] = array3;
 
     QCOMPARE(unserialized, expected);
 }
