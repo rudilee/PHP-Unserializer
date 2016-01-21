@@ -83,5 +83,7 @@ QVariantHash PhpUnserializer::parseArray()
         result.insert(key, value);
     }
 
+    index++;
+
     return result;
 }
